@@ -4,7 +4,7 @@ namespace LaminasTest\ApiTools\OAuth2\Adapter\Pdo;
 
 use OAuth2\Storage\UserCredentialsInterface;
 
-class UserCredentialsTest extends BaseTest
+class UserCredentialsTest extends AbstractBaseTest
 {
     /** @dataProvider provideStorage */
     public function testCheckUserCredentials(UserCredentialsInterface $storage)
@@ -33,27 +33,9 @@ class UserCredentialsTest extends BaseTest
     }
 
     /** @dataProvider provideStorage */
-    public function testUserClaims(UserCredentialsInterface $storage)
+    public function testUserClaims()
     {
         // FIXME:  openid not supported
         $this->assertFalse(false);
-        return;
-
-
-
-        $claims = $storage->getUserClaims('oauth_test_user', 'profile');
-        $this->assertTrue(is_array($claims));
-
-        $claims = $storage->getUserClaims('oauth_test_user', 'email');
-        $this->assertTrue(is_array($claims));
-
-        $claims = $storage->getUserClaims('oauth_test_user', 'address');
-        $this->assertTrue(is_array($claims));
-
-        $claims = $storage->getUserClaims('oauth_test_user', 'phone');
-        $this->assertTrue(is_array($claims));
-
-        $this->assertFalse($storage->getUserClaims('oauth_test_user', 'invalid'));
-        $this->assertFalse($claims = $storage->getUserClaims('invalid', 'invalid'));
     }
 }

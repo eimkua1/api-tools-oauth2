@@ -8,6 +8,8 @@
 
 namespace LaminasTest\ApiTools\OAuth2\Factory;
 
+use Laminas\ApiTools\OAuth2\Adapter\MongoAdapter;
+use Laminas\ApiTools\OAuth2\Controller\Exception\RuntimeException;
 use Laminas\ApiTools\OAuth2\Factory\MongoAdapterFactory;
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
@@ -15,21 +17,22 @@ use MongoClient;
 use MongoDB;
 use ReflectionObject;
 
+use function class_exists;
+use function extension_loaded;
+use function version_compare;
+
 class MongoAdapterFactoryTest extends AbstractHttpControllerTestCase
 {
-    /**
-     * @var MongoAdapterFactory
-     */
+    /** @var MongoAdapterFactory */
     protected $factory;
 
-    /**
-     * @var ServiceManager
-     */
+    /** @var ServiceManager */
     protected $services;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        if (! (extension_loaded('mongodb') || extension_loaded('mongo'))
+        if (
+            ! (extension_loaded('mongodb') || extension_loaded('mongo'))
             || ! class_exists(MongoClient::class)
             || version_compare(MongoClient::VERSION, '1.4.1', '<')
         ) {
@@ -40,28 +43,24 @@ class MongoAdapterFactoryTest extends AbstractHttpControllerTestCase
         $this->services = $services = new ServiceManager();
 
         $this->setApplicationConfig([
-            'modules' => [
+            'modules'                  => [
                 'Laminas\ApiTools\OAuth2',
             ],
-            'module_listener_options' => [
-                'module_paths' => [__DIR__ . '/../../'],
+            'module_listener_options'  => [
+                'module_paths'      => [__DIR__ . '/../../'],
                 'config_glob_paths' => [],
             ],
             'service_listener_options' => [],
-            'service_manager' => [],
+            'service_manager'          => [],
         ]);
         parent::setUp();
     }
 
-    /**
-     * @expectedException \Laminas\ApiTools\OAuth2\Controller\Exception\RuntimeException
-     */
     public function testExceptionThrownWhenMissingMongoCredentials()
     {
+        $this->expectException(RuntimeException::class);
         $this->services->setService('config', []);
-        $adapter = $this->factory->createService($this->services);
-
-        $this->assertInstanceOf('Laminas\ApiTools\OAuth2\Adapter\PdoAdapter', $adapter);
+        $this->factory->createService($this->services);
     }
 
     public function testInstanceCreated()
@@ -70,13 +69,13 @@ class MongoAdapterFactoryTest extends AbstractHttpControllerTestCase
             'api-tools-oauth2' => [
                 'mongo' => [
                     'database' => 'test',
-                    'dsn'      => 'mongodb://127.0.0.1:27017'
-                ]
-            ]
+                    'dsn'      => 'mongodb://127.0.0.1:27017',
+                ],
+            ],
         ]);
 
         $adapter = $this->factory->createService($this->services);
-        $this->assertInstanceOf('Laminas\ApiTools\OAuth2\Adapter\MongoAdapter', $adapter);
+        $this->assertInstanceOf(MongoAdapter::class, $adapter);
     }
 
     public function testInstanceCreatedWithMongoDbInServiceLocator()
@@ -94,14 +93,14 @@ class MongoAdapterFactoryTest extends AbstractHttpControllerTestCase
         $this->services->setService('testdb', $mock);
 
         $adapter = $this->factory->createService($this->services);
-        $this->assertInstanceOf('Laminas\ApiTools\OAuth2\Adapter\MongoAdapter', $adapter);
+        $this->assertInstanceOf(MongoAdapter::class, $adapter);
     }
 
     public function testCanPassAdapterConfigurationWhenCreatingInstance()
     {
         $this->services->setService('config', [
             'api-tools-oauth2' => [
-                'mongo' => [
+                'mongo'            => [
                     'locator_name' => 'testdb',
                 ],
                 'storage_settings' => [
@@ -115,7 +114,7 @@ class MongoAdapterFactoryTest extends AbstractHttpControllerTestCase
         $this->services->setService('testdb', $mock);
 
         $adapter = $this->factory->createService($this->services);
-        $this->assertInstanceOf('Laminas\ApiTools\OAuth2\Adapter\MongoAdapter', $adapter);
+        $this->assertInstanceOf(MongoAdapter::class, $adapter);
 
         $r = new ReflectionObject($adapter);
         $c = $r->getProperty('config');

@@ -8,21 +8,27 @@
 
 namespace Laminas\ApiTools\OAuth2;
 
+use Laminas\ApiTools\ContentNegotiation\JsonModel;
+use Laminas\View\Model\ViewModel;
+use ZF\OAuth2\Adapter\MongoAdapter;
+use ZF\OAuth2\Adapter\PdoAdapter;
+use ZF\OAuth2\Provider\UserId\AuthenticationService;
+
 return [
-    'controllers' => [
+    'controllers'                   => [
         // Legacy Zend Framework aliases
-        'aliases' => [
+        'aliases'   => [
             'ZF\OAuth2\Controller\Auth' => 'Laminas\ApiTools\OAuth2\Controller\Auth',
         ],
         'factories' => [
             'Laminas\ApiTools\OAuth2\Controller\Auth' => Factory\AuthControllerFactory::class,
         ],
     ],
-    'router' => [
+    'router'                        => [
         'routes' => [
             'oauth' => [
-                'type' => 'literal',
-                'options' => [
+                'type'          => 'literal',
+                'options'       => [
                     'route'    => '/oauth',
                     'defaults' => [
                         'controller' => 'Laminas\ApiTools\OAuth2\Controller\Auth',
@@ -30,38 +36,38 @@ return [
                     ],
                 ],
                 'may_terminate' => true,
-                'child_routes' => [
-                    'revoke' => [
-                        'type' => 'literal',
+                'child_routes'  => [
+                    'revoke'    => [
+                        'type'    => 'literal',
                         'options' => [
-                            'route' => '/revoke',
+                            'route'    => '/revoke',
                             'defaults' => [
                                 'action' => 'revoke',
                             ],
                         ],
                     ],
                     'authorize' => [
-                        'type' => 'literal',
+                        'type'    => 'literal',
                         'options' => [
-                            'route' => '/authorize',
+                            'route'    => '/authorize',
                             'defaults' => [
                                 'action' => 'authorize',
                             ],
                         ],
                     ],
-                    'resource' => [
-                        'type' => 'literal',
+                    'resource'  => [
+                        'type'    => 'literal',
                         'options' => [
-                            'route' => '/resource',
+                            'route'    => '/resource',
                             'defaults' => [
                                 'action' => 'resource',
                             ],
                         ],
                     ],
-                    'code' => [
-                        'type' => 'literal',
+                    'code'      => [
+                        'type'    => 'literal',
                         'options' => [
-                            'route' => '/receivecode',
+                            'route'    => '/receivecode',
                             'defaults' => [
                                 'action' => 'receiveCode',
                             ],
@@ -71,26 +77,26 @@ return [
             ],
         ],
     ],
-    'service_manager' => [
-        'aliases' => [
+    'service_manager'               => [
+        'aliases'   => [
             'Laminas\ApiTools\OAuth2\Provider\UserId' => Provider\UserId\AuthenticationService::class,
 
             // Legacy Zend Framework aliases
-            'ZF\OAuth2\Provider\UserId' => 'Laminas\ApiTools\OAuth2\Provider\UserId',
-            \ZF\OAuth2\Adapter\PdoAdapter::class => Adapter\PdoAdapter::class,
-            \ZF\OAuth2\Adapter\MongoAdapter::class => Adapter\MongoAdapter::class,
-            \ZF\OAuth2\Provider\UserId\AuthenticationService::class => Provider\UserId\AuthenticationService::class,
+            'ZF\OAuth2\Provider\UserId'      => 'Laminas\ApiTools\OAuth2\Provider\UserId',
+            PdoAdapter::class                => Adapter\PdoAdapter::class,
+            MongoAdapter::class              => Adapter\MongoAdapter::class,
+            AuthenticationService::class     => Provider\UserId\AuthenticationService::class,
             'ZF\OAuth2\Service\OAuth2Server' => 'Laminas\ApiTools\OAuth2\Service\OAuth2Server',
         ],
         'factories' => [
-            Adapter\PdoAdapter::class    => Factory\PdoAdapterFactory::class,
-            Adapter\MongoAdapter::class  => Factory\MongoAdapterFactory::class,
-            Provider\UserId\AuthenticationService::class => Provider\UserId\AuthenticationServiceFactory::class,
-            'Laminas\ApiTools\OAuth2\Service\OAuth2Server'  => Factory\OAuth2ServerFactory::class
-        ]
+            Adapter\PdoAdapter::class                      => Factory\PdoAdapterFactory::class,
+            Adapter\MongoAdapter::class                    => Factory\MongoAdapterFactory::class,
+            Provider\UserId\AuthenticationService::class   => Provider\UserId\AuthenticationServiceFactory::class,
+            'Laminas\ApiTools\OAuth2\Service\OAuth2Server' => Factory\OAuth2ServerFactory::class,
+        ],
     ],
-    'view_manager' => [
-        'template_map' => [
+    'view_manager'                  => [
+        'template_map'        => [
             'oauth/authorize'    => __DIR__ . '/../view/laminas/auth/authorize.phtml',
             'oauth/receive-code' => __DIR__ . '/../view/laminas/auth/receive-code.phtml',
         ],
@@ -98,7 +104,7 @@ return [
             __DIR__ . '/../view',
         ],
     ],
-    'api-tools-oauth2' => [
+    'api-tools-oauth2'              => [
         /*
          * Config can include:
          * - 'storage' => 'name of storage service' - typically Laminas\ApiTools\OAuth2\Adapter\PdoAdapter
@@ -131,11 +137,11 @@ return [
     'api-tools-content-negotiation' => [
         'controllers' => [
             'Laminas\ApiTools\OAuth2\Controller\Auth' => [
-                'Laminas\ApiTools\ContentNegotiation\JsonModel' => [
+                JsonModel::class => [
                     'application/json',
                     'application/*+json',
                 ],
-                'Laminas\View\Model\ViewModel' => [
+                ViewModel::class => [
                     'text/html',
                     'application/xhtml+xml',
                 ],

@@ -12,6 +12,9 @@ use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 
 class BodyParams extends AbstractPlugin
 {
+    /**
+     * @return array
+     */
     public function __invoke()
     {
         return [];

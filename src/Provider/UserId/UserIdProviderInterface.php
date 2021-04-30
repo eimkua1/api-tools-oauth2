@@ -15,7 +15,6 @@ interface UserIdProviderInterface
     /**
      * Return the current authenticated user identifier.
      *
-     * @param RequestInterface $request
      * @return mixed
      */
     public function __invoke(RequestInterface $request);

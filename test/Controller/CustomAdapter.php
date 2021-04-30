@@ -13,6 +13,11 @@ use OAuth2\Storage\Memory;
 
 class CustomAdapter extends Memory
 {
+    /**
+     * @param string $username
+     * @param string $password
+     * @return bool
+     */
     public function checkUserCredentials($username, $password)
     {
         // mocking logic to throw an exception if the user is banned
@@ -26,7 +31,11 @@ class CustomAdapter extends Memory
         return parent::checkUserCredentials($username, $password);
     }
 
-    public function isPublicClient($client_id)
+    /**
+     * @param string $clientId
+     * @return bool
+     */
+    public function isPublicClient($clientId)
     {
         return true;
     }

@@ -5,9 +5,15 @@ namespace LaminasTest\ApiTools\OAuth2\Adapter\Pdo;
 use OAuth2\Scope;
 use OAuth2\Storage\ScopeInterface;
 
-class ScopeTest extends BaseTest
+use function explode;
+use function sort;
+
+class ScopeTest extends AbstractBaseTest
 {
-    /** @dataProvider provideStorage */
+    /**
+     * @param ScopeInterface $storage
+     * @dataProvider provideStorage
+     */
     public function testScopeExists($storage)
     {
         if ($storage instanceof NullStorage) {
@@ -29,7 +35,10 @@ class ScopeTest extends BaseTest
         $this->assertFalse($scopeUtil->scopeExists('supportedscope1 supportedscope2 supportedscope3 fakescope'));
     }
 
-    /** @dataProvider provideStorage */
+    /**
+     * @param ScopeInterface $storage
+     * @dataProvider provideStorage
+     */
     public function testGetDefaultScope($storage)
     {
         if ($storage instanceof NullStorage) {
@@ -45,8 +54,8 @@ class ScopeTest extends BaseTest
 
         // test getting default scope
         $scopeUtil = new Scope($storage);
-        $expected = explode(' ', $scopeUtil->getDefaultScope());
-        $actual = explode(' ', 'defaultscope1 defaultscope2');
+        $expected  = explode(' ', $scopeUtil->getDefaultScope());
+        $actual    = explode(' ', 'defaultscope1 defaultscope2');
         sort($expected);
         sort($actual);
         $this->assertEquals($expected, $actual);

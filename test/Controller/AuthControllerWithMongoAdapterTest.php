@@ -13,11 +13,18 @@ use MongoClient;
 use MongoConnectionException;
 use MongoDB;
 
+use function array_key_exists;
+use function class_exists;
+use function extension_loaded;
+use function http_build_query;
+use function json_decode;
+use function preg_match;
+use function sprintf;
+use function version_compare;
+
 class AuthControllerWithMongoAdapterTest extends AbstractHttpControllerTestCase
 {
-    /**
-     * @var MongoDB
-     */
+    /** @var MongoDB */
     protected $db;
 
     /**
@@ -36,9 +43,10 @@ class AuthControllerWithMongoAdapterTest extends AbstractHttpControllerTestCase
         'grant_types'   => null,
     ];
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        if (! (extension_loaded('mongodb') || extension_loaded('mongo'))
+        if (
+            ! (extension_loaded('mongodb') || extension_loaded('mongo'))
             || ! class_exists(MongoClient::class)
             || version_compare(MongoClient::VERSION, '1.4.1', '<')
         ) {
@@ -61,7 +69,7 @@ class AuthControllerWithMongoAdapterTest extends AbstractHttpControllerTestCase
         $this->getApplicationServiceLocator()->setService('MongoDB', $this->db);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if ($this->db instanceof MongoDB) {
             $this->db->drop();
@@ -114,7 +122,7 @@ class AuthControllerWithMongoAdapterTest extends AbstractHttpControllerTestCase
             'response_type' => 'code',
             'client_id'     => 'testclient',
             'state'         => 'xyz',
-            'redirect_uri'  => '/oauth/receivecode'
+            'redirect_uri'  => '/oauth/receivecode',
         ];
 
         $this->dispatch('/oauth/authorize?' . http_build_query($queryData), 'POST', ['authorized' => 'yes']);
@@ -146,10 +154,10 @@ class AuthControllerWithMongoAdapterTest extends AbstractHttpControllerTestCase
 
     public function testImplicitClientAuth()
     {
-        $config = $this->getApplication()->getConfig();
+        $config      = $this->getApplication()->getConfig();
         $oauthConfig = $config['api-tools-oauth2'];
 
-        $allowImplicit = isset($oauthConfig['allow_implicit']) ? $oauthConfig['allow_implicit'] : false;
+        $allowImplicit = $oauthConfig['allow_implicit'] ?? false;
 
         if (! $allowImplicit) {
             $this->markTestSkipped('The allow implicit client mode is disabled');

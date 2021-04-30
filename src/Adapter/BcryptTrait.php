@@ -12,20 +12,13 @@ use Laminas\Crypt\Password\Bcrypt;
 
 /**
  * Trait BcryptTrait
- *
- * @package Laminas\ApiTools\OAuth2\Adapter
- * @author Chuck "MANCHUCK" Reeves <chuck@manchuck.com>
  */
 trait BcryptTrait
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $bcryptCost = 10;
 
-    /**
-     * @var Bcrypt
-     */
+    /** @var Bcrypt */
     protected $bcrypt;
 
     /**
@@ -42,7 +35,7 @@ trait BcryptTrait
     }
 
     /**
-     * @param $value
+     * @param int $value
      * @return $this
      */
     public function setBcryptCost($value)
@@ -64,7 +57,7 @@ trait BcryptTrait
     }
 
     /**
-     * @param $string
+     * @param string $string
      */
     protected function createBcryptHash(&$string)
     {
@@ -74,8 +67,8 @@ trait BcryptTrait
     /**
      * Check hash using bcrypt
      *
-     * @param $hash
-     * @param $check
+     * @param string $hash
+     * @param string $check
      * @return bool
      */
     protected function verifyHash($check, $hash)

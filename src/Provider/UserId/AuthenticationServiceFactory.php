@@ -9,20 +9,20 @@
 namespace Laminas\ApiTools\OAuth2\Provider\UserId;
 
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 
 class AuthenticationServiceFactory
 {
     /**
-     * @param  ContainerInterface $container
      * @return AuthenticationService
      */
     public function __invoke(ContainerInterface $container)
     {
         $config = $container->get('config');
 
-        if ($container->has('Laminas\Authentication\AuthenticationService')) {
+        if ($container->has(\Laminas\Authentication\AuthenticationService::class)) {
             return new AuthenticationService(
-                $container->get('Laminas\Authentication\AuthenticationService'),
+                $container->get(\Laminas\Authentication\AuthenticationService::class),
                 $config
             );
         }
@@ -33,7 +33,7 @@ class AuthenticationServiceFactory
     /**
      * Provided for backwards compatibility; proxies to __invoke().
      *
-     * @param \Laminas\ServiceManager\ServiceLocatorInterface $container
+     * @param ServiceLocatorInterface $container
      * @return AuthenticationService
      */
     public function createService($container)

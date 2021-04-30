@@ -8,17 +8,27 @@
 
 namespace LaminasTest\ApiTools\OAuth2\Controller;
 
+use Laminas\ApiTools\OAuth2\Adapter\PdoAdapter;
+use Laminas\Authentication\AuthenticationService;
+use Laminas\Authentication\Storage\StorageInterface;
 use Laminas\Stdlib\Parameters;
 use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 use Mockery as M;
+use PDO;
 use ReflectionProperty;
+
+use function file_get_contents;
+use function json_decode;
+use function preg_match;
+use function sprintf;
+use function var_export;
 
 class AuthControllerWithLaminasAuthenticationServiceTest extends AbstractHttpControllerTestCase
 {
-    protected $loader;
+    /** @var PDO */
     protected $db;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->setApplicationConfig(
             include __DIR__ . '/../TestAsset/laminas.authenticationservice.application.config.php'
@@ -30,8 +40,8 @@ class AuthControllerWithLaminasAuthenticationServiceTest extends AbstractHttpCon
 
     public function setupDb()
     {
-        $pdo = $this->getApplication()->getServiceManager()->get('Laminas\ApiTools\OAuth2\Adapter\PdoAdapter');
-        $r = new ReflectionProperty($pdo, 'db');
+        $pdo = $this->getApplication()->getServiceManager()->get(PdoAdapter::class);
+        $r   = new ReflectionProperty($pdo, 'db');
         $r->setAccessible(true);
         $db = $r->getValue($pdo);
 
@@ -40,19 +50,25 @@ class AuthControllerWithLaminasAuthenticationServiceTest extends AbstractHttpCon
         $this->db = $db;
     }
 
+    /**
+     * @return PDO
+     */
     public function getDb()
     {
         return $this->db;
     }
 
+    /**
+     * @return mixed
+     */
     public function getAuthenticationService()
     {
-        $storage = M::mock('Laminas\Authentication\Storage\StorageInterface');
+        $storage = M::mock(StorageInterface::class);
         $storage->shouldReceive('isEmpty')->once()->andReturn(false);
         $storage->shouldReceive('read')->once()->andReturn(123);
 
         $authentication = $this->getApplication()->
-            getServiceManager()->get('Laminas\Authentication\AuthenticationService');
+            getServiceManager()->get(AuthenticationService::class);
 
         $authentication->setStorage($storage);
 
@@ -90,7 +106,7 @@ class AuthControllerWithLaminasAuthenticationServiceTest extends AbstractHttpCon
             'SELECT * FROM oauth_authorization_codes WHERE authorization_code = \'%s\'',
             $code
         );
-        $row = $this->getDb()
+        $row   = $this->getDb()
             ->query($query)
             ->fetch();
 

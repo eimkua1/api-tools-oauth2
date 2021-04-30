@@ -4,7 +4,9 @@ namespace LaminasTest\ApiTools\OAuth2\Adapter\Pdo;
 
 use OAuth2\Storage\RefreshTokenInterface;
 
-class RefreshTokenTest extends BaseTest
+use function time;
+
+class RefreshTokenTest extends AbstractBaseTest
 {
     /** @dataProvider provideStorage */
     public function testSetRefreshToken(RefreshTokenInterface $storage)
@@ -38,10 +40,10 @@ class RefreshTokenTest extends BaseTest
         $this->assertArrayHasKey('expires', $token);
         $this->assertEquals($token['refresh_token'], 'refreshtoken');
         $this->assertEquals($token['client_id'], 'oauth_test_client');
-        $this->assertEquals($token['user_id'], '1'); # reference from client
+        $this->assertEquals($token['user_id'], '1'); // reference from client
         $this->assertEquals($token['expires'], $expires);
 
-        # should be expreRefreshToken?
+        // should be expreRefreshToken?
         $this->assertTrue($storage->unsetRefreshToken('refreshtoken'));
     }
 }
